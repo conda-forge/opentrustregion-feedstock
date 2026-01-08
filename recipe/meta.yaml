@@ -11,7 +11,7 @@ source:
   sha256: 41e8515f046e3b0e7c37be895b9a89e5bcb208eece16d668f31c9c5a4f216f21
 
 build:
-  number: 0
+  number: 1
 
 outputs:
   - name: opentrustregion
@@ -22,12 +22,9 @@ outputs:
         - {{ pin_subpackage('opentrustregion', max_pin='x.x') }}
     requirements:
       build:
-        - {{ stdlib("c") }}                                                          # [unix]
-        - {{ compiler("c") }}                                                        # [unix]
-        - {{ compiler("fortran") }}                                                  # [unix]
-        - {{ stdlib("m2w64_c") }}                                                    # [win]
-        - {{ compiler("m2w64_c") }}                                                  # [win]
-        - {{ compiler("m2w64_fortran") }}                                            # [win]
+        - {{ stdlib("c") }}
+        - {{ compiler("c") }}
+        - {{ compiler("fortran") }}
         - cmake
         - ninja
       host:
