@@ -1,4 +1,4 @@
-{% set version = "2.0.1" %}
+{% set version = "3.0.0" %}
 {% set PYTHON = PYTHON | default("$PYTHON") %}  # https://github.com/conda/conda-build/issues/5424#issuecomment-2663290268
 
 package:
@@ -7,13 +7,11 @@ package:
 
 source:
   url: https://github.com/eriksen-lab/opentrustregion/archive/v{{ version }}.tar.gz
-  patches:
-    - 002-fix-fortran-native-flags.patch
-  sha256: 67809845eeb3b88198bf053b6ac9ff91a21332559d80e5d5167952bc78b1bfd1
+  sha256: 3c6a22cc78a78a21d47c3a951ac0d2f16b014bdd2b74bcef88d98b9eaf5a4fc1
   # <sha256-value> = `curl -sL <url-value> | openssl sha256`
 
 build:
-  number: 2
+  number: 0
 
 outputs:
   - name: opentrustregion
@@ -54,9 +52,11 @@ outputs:
         - if not exist %PREFIX%\\Library\\bin\\libotrtestsuite%SHLIB_EXT% exit 1     # [win]
         # Verify accessories
         - test -f $PREFIX/include/opentrustregion.h                                  # [unix]
+        - test -f $PREFIX/include/opentrustregion_32/opentrustregion.mod             # [unix]
         - test -f $PREFIX/lib/cmake/OpenTrustRegion/OpenTrustRegionConfig.cmake      # [unix]
         - test -f $PREFIX/lib/cmake/OpenTrustRegion/OpenTrustRegionTargets-32.cmake  # [unix]
         - if not exist %PREFIX%\\Library\\include\\opentrustregion.h exit 1          # [win]
+        - if not exist %PREFIX%\\Library\\include\\opentrustregion_32\\opentrustregion.mod exit 1  # [win]
         - if not exist %PREFIX%\\Library\\OpenTrustRegion\\CMake\\OpenTrustRegionConfig.cmake exit 1  # [win]
         - if not exist %PREFIX%\\Library\\OpenTrustRegion\\CMake\\OpenTrustRegionTargets-32.cmake exit 1  # [win]
         # Inspect linkage
@@ -69,15 +69,11 @@ outputs:
       noarch: python
       script: {{ PYTHON }} -m pip install . --ignore-installed --no-cache-dir --no-deps -vv
     requirements:
-      build:
-        - cmake
-        - ninja
       host:
         - {{ pin_subpackage('opentrustregion', exact=True) }}
         - python {{ python_min }}
         - pip
-        - setuptools
-        - wheel
+        - scikit-build-core >=0.11
       run:
         - {{ pin_subpackage('opentrustregion', exact=True) }}
         - python >={{ python_min }}
@@ -104,6 +100,7 @@ outputs:
         - if not exist %SP_DIR%\\pyopentrustregion\\test_data\\h2o_r_ints.bin exit 1  # [win]
         # Actually test
         - pip check
+        - python -m pyopentrustregion.verify_install
         - python -m pyopentrustregion.testsuite
 
 about:
