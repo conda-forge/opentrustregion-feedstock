@@ -1,4 +1,4 @@
-{% set version = "3.0.0" %}
+{% set version = "3.0.1" %}
 {% set PYTHON = PYTHON | default("$PYTHON") %}  # https://github.com/conda/conda-build/issues/5424#issuecomment-2663290268
 
 package:
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/eriksen-lab/opentrustregion/archive/v{{ version }}.tar.gz
-  sha256: 3c6a22cc78a78a21d47c3a951ac0d2f16b014bdd2b74bcef88d98b9eaf5a4fc1
+  sha256: 2c7e3de494f5c59466ac1edd0384f6533f38abe93c9b866e1f47bd1b827443e9
   # <sha256-value> = `curl -sL <url-value> | openssl sha256`
 
 build:
@@ -24,12 +24,9 @@ outputs:
       build:
         - python {{ python_min }}                                # [build_platform != target_platform]
         - cross-python_{{ target_platform }} {{ python_min }}    # [build_platform != target_platform]
-        - {{ stdlib("c") }}                                                          # [unix]
-        - {{ compiler("c") }}                                                        # [unix]
-        - {{ compiler("fortran") }}                                                  # [unix]
-        - {{ stdlib("m2w64_c") }}                                                    # [win]
-        - {{ compiler("m2w64_c") }}                                                  # [win]
-        - {{ compiler("m2w64_fortran") }}                                            # [win]
+        - {{ stdlib("c") }}
+        - {{ compiler("c") }}
+        - {{ compiler("fortran") }}
         - cmake
         - ninja
       host:
@@ -45,7 +42,6 @@ outputs:
         - test -h $PREFIX/lib/libopentrustregion_32$SHLIB_EXT                        # [unix]
         - test ! -h $PREFIX/lib/libopentrustregion_32.a                              # [unix]
         - test -f $PREFIX/lib/libotrtestsuite$SHLIB_EXT                              # [unix]
-        - if not exist %PREFIX%\\Library\\lib\\libopentrustregion_32.dll.a exit 1    # [win]   # gnu import lib
         - if not exist %PREFIX%\\Library\\lib\\libopentrustregion_32.lib exit 1      # [win]   # ms import lib
         - if not exist %PREFIX%\\Library\\bin\\libopentrustregion_32.dll exit 1      # [win]   # gnu/ms dyn lib
         - if exist %PREFIX%\\Library\\lib\\libopentrustregion_32.a exit 1            # [win]   # gnu static lib absent
